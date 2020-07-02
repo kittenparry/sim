@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# for Windows need: python -m pip install windows-curses
+
 import sys
 import curses
 
