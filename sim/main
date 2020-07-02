@@ -3,7 +3,7 @@
 import sys
 import curses
 
-def start():
+def main():
 	world = []
 	for x in range(6):
 		world.append([' ', ' ', ' ', ' '])
@@ -24,20 +24,20 @@ def start():
 	stdscr.keypad(1) # this enables listening for keys
 
 	stdscr.addstr(0, 10, 'Hit \'q\' to quit')
-	stdscr.addstr(1, 10, 'Press any key to start...')
+	stdscr.addstr(1, 10, 'Words sound so hollow in the cold.')
 	stdscr.refresh()
 
 	key = ''
 	while key != ord('q'):
-		key = stdscr.getch()
-		stdscr.addstr(1, 10, 'Words sound so hollow in the cold.')
 		for y in range(len(world)):
 			for i, x in enumerate(world[y]):
 				stdscr.addstr(y, i, str(x), curses.color_pair(1))
+
+		key = stdscr.getch() # moving this below draws first, rather than waiting for input
 		stdscr.refresh()
 
 	curses.endwin()
 
 
 if __name__ == '__main__':
-	start()
+	main()
