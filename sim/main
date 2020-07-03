@@ -5,16 +5,29 @@
 import sys
 import curses
 
+from Human import Human
+from World import World
+
+IND_HUM = 'O'
+
 def main():
+	population = 7
+	humans = []
+	for i in range(population):
+		humans.append(Human('Adam'))
+
 	world = []
-	for x in range(6):
-		world.append([' ', ' ', ' ', ' '])
+	for x in range(World.height):
+		temp = []
+		for y in range(World.width):
+			temp.append([' '])
+		world.append(temp)
 	
-	world[0][1] = 'D'
-	world[1][1] = 'C'
-	world[3][2] = 'G'
-
-
+	# world[y][x]
+	# world[0][1][0] = 'D'
+	# world[0][1].append('T')
+	# world[1][1].append('C')
+	# world[3][2].append('G')
 
 
 	stdscr = curses.initscr()
@@ -26,25 +39,48 @@ def main():
 	stdscr.keypad(1) # this enables listening for keys
 	stdscr.nodelay(1) # removes wait for getch()
 
-	stdscr.addstr(0, 10, 'Hit \'q\' to quit')
+	stdscr.addstr(0, 10, 'Hit \'q\' to quit.')
 	stdscr.addstr(1, 10, 'Words sound so hollow in the cold.')
 	stdscr.refresh()
 
-	timer = 0;
+	layer = 0;
 	key = ''
 	while key != ord('q'):
+		# to draw different layers
+		if layer >= 3:
+			layer = 0
 		key = stdscr.getch()
-		stdscr.addstr(2, 10, str(timer))
-		for y in range(len(world)):
-			for i, x in enumerate(world[y]):
-				stdscr.addstr(y, i, str(x), curses.color_pair(1))
+		stdscr.addstr(2, 10, str(layer))
+		position_humans(world, humans)
+		draw_map(stdscr, world, layer)
+		move_humans(world, humans)
 
 		stdscr.refresh()
 		curses.napms(1000) # delays input rather than letting them skip cycle, including q
-		timer += 1
+		layer += 1
 
 	curses.endwin()
 
+
+def draw_map(stdscr, world, layer):
+	for y in range(len(world)):
+		for i, x in enumerate(world[y]):
+			if IND_HUM in x:
+				obj = IND_HUM
+			else:
+				obj = x[layer] if layer < len(x) else x[-1]
+			stdscr.addstr(y, i, str(obj), curses.color_pair(1))
+
+def position_humans(world, humans):
+	for h in humans:
+		world[h.pos_y][h.pos_x].append(IND_HUM)
+
+def move_humans(world, humans):
+	for h in humans:
+		# remove all instances of human indicator from that position
+		while IND_HUM in world[h.pos_y][h.pos_x]:
+			world[h.pos_y][h.pos_x].remove(IND_HUM)
+		h.move_around()
 
 if __name__ == '__main__':
 	main()
