@@ -5,6 +5,7 @@ import math
 
 from World import World
 from Food import food_tiles
+from Shelter import shelter_tiles
 
 class Human:
 	def __init__(self, name):
@@ -62,11 +63,13 @@ class Human:
 				reason = ''
 				if self.target_reason == 'food':
 					reason = 'food'
+				elif self.target_reason == 'shelter':
+					reason == 'shelter'
 				self.target_reason = ''
 				self.target = None
 				if reason == 'food':
 					self.eat()
-				elif reason == 'sleep':
+				elif reason == 'shelter':
 					self.sleep()
 		else:
 		# start, end (not including), skip first x results
@@ -83,8 +86,8 @@ class Human:
 	def decrease_needs(self):
 		if not self.is_eating:
 			self.need_hunger -= random.randrange(2, 6)
-		# if not self.is_sleeping:
-		# 	self.need_sleep -= random.randrange(1, 4)
+		if not self.is_sleeping:
+			self.need_sleep -= random.randrange(1, 4)
 
 	def check_needs(self):
 		if self.is_sleeping:
@@ -99,14 +102,14 @@ class Human:
 		elif self.need_hunger <= 50 and not self.is_eating:
 			self.is_sleeping = False
 			self.status = 'Looking for food.  '
-			self.get_closest_object()
+			self.get_closest_object('food')
 		elif self.is_eating:
 			self.is_sleeping = False
 			self.status = 'Eating.            '
 			self.eat()
 		elif self.need_sleep <= 30 and not self.is_sleeping:
-			self.status = 'Going to sleep.   '
-			# TODO: same above for sleep
+			self.status = 'Looking for shelter.  '
+			self.get_closest_object('shelter')
 		else:
 			self.status = 'Wandering.         '
 
@@ -127,17 +130,21 @@ class Human:
 			self.is_sleeping = False
 			self.status = 'Wandering.         '
 	
-	def get_closest_object(self):
+	def get_closest_object(self, reason):
 		# formula: v/ (x2 - x1)^2 + (y2 - y1)^2
 		best_target = None
-		closest_distance = float('inf') # FIXME:
+		closest_distance = float('inf')
 
-		# TODO: change here for reason
-		for food in food_tiles:
-			distance_to_obj = math.sqrt((food.pos_x - self.pos_x) ** 2 + (food.pos_y - self.pos_y) ** 2)
+		if reason == 'food':
+			tiles = food_tiles
+		elif reason == 'shelter':
+			tiles = shelter_tiles
+
+		for obj in tiles:
+			distance_to_obj = math.sqrt((obj.pos_x - self.pos_x) ** 2 + (obj.pos_y - self.pos_y) ** 2)
 			if distance_to_obj < closest_distance:
 				closest_distance = distance_to_obj
-				best_target = food
+				best_target = obj
 
 		self.target = best_target
-		self.target_reason = 'food'
+		self.target_reason = reason

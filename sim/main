@@ -8,9 +8,11 @@ import curses
 from Human import Human
 from World import World
 from Food import food_tiles
+from Shelter import shelter_tiles
 
 IND_HUM = 'O'  # human indicator
 IND_FOOD = '+' # food indicator
+IND_SHEL = '@' # shelter indicator
 
 PAD_HOR = World.width + 2  # horizontal padding
 
@@ -41,7 +43,8 @@ def main():
 	stdscr.addstr(1, PAD_HOR, 'Words sound so hollow in the cold.')
 	stdscr.refresh()
 
-	position_food(world, food_tiles)
+	position_food(world)
+	position_shelter(world)
 	layer = 0;
 	key = ''
 	while key != ord('q'):
@@ -65,7 +68,10 @@ def main():
 def draw_map(stdscr, world, layer):
 	for y in range(len(world)):
 		for i, x in enumerate(world[y]):
-			if IND_HUM in x:
+			# TODO: maybe change the order of display here
+			if IND_SHEL in x and ' ' in x:
+				obj = IND_SHEL
+			elif IND_HUM in x:
 				obj = IND_HUM
 			elif IND_FOOD in x and ' ' in x:
 				obj = IND_FOOD
@@ -88,9 +94,14 @@ def move_humans(world, humans):
 		h.move_around()
 
 # FOOD
-def position_food(world, food):
-	for f in food:
+def position_food(world):
+	for f in food_tiles:
 		world[f.pos_y][f.pos_x].append(IND_FOOD)
+
+# SHELTER
+def position_shelter(world):
+	for s in shelter_tiles:
+		world[s.pos_y][s.pos_x].append(IND_SHEL)
 
 # UI
 def print_stats_humans(stdscr, world, humans):
