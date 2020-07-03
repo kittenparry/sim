@@ -7,12 +7,15 @@ import curses
 
 from Human import Human
 from World import World
+from Food import food_tiles
 
-IND_HUM = 'O'              # human indicator
+IND_HUM = 'O'  # human indicator
+IND_FOOD = '+' # food indicator
+
 PAD_HOR = World.width + 2  # horizontal padding
 
 def main():
-	population = 7
+	population = 1
 	humans = []
 	for i in range(population):
 		humans.append(Human('Adam'))
@@ -23,12 +26,6 @@ def main():
 		for y in range(World.width):
 			temp.append([' '])
 		world.append(temp)
-	
-	# world[y][x]
-	# world[0][1][0] = 'D'
-	# world[0][1].append('T')
-	# world[1][1].append('C')
-	# world[3][2].append('G')
 
 
 	stdscr = curses.initscr()
@@ -44,6 +41,7 @@ def main():
 	stdscr.addstr(1, PAD_HOR, 'Words sound so hollow in the cold.')
 	stdscr.refresh()
 
+	position_food(world, food_tiles)
 	layer = 0;
 	key = ''
 	while key != ord('q'):
@@ -69,10 +67,13 @@ def draw_map(stdscr, world, layer):
 		for i, x in enumerate(world[y]):
 			if IND_HUM in x:
 				obj = IND_HUM
+			elif IND_FOOD in x and ' ' in x:
+				obj = IND_FOOD
 			else:
 				obj = x[layer] if layer < len(x) else x[-1]
 			stdscr.addstr(y, i, str(obj), curses.color_pair(1))
 
+# HUMANS
 def position_humans(world, humans):
 	for h in humans:
 		world[h.pos_y][h.pos_x].append(IND_HUM)
@@ -82,12 +83,20 @@ def move_humans(world, humans):
 		# remove all instances of human indicator from that position
 		while IND_HUM in world[h.pos_y][h.pos_x]:
 			world[h.pos_y][h.pos_x].remove(IND_HUM)
+		h.decrease_needs()
+		h.check_needs()
 		h.move_around()
 
+# FOOD
+def position_food(world, food):
+	for f in food:
+		world[f.pos_y][f.pos_x].append(IND_FOOD)
+
+# UI
 def print_stats_humans(stdscr, world, humans):
 	stdscr.addstr(World.height, 0, World.width * '-')
 	for i, h in enumerate(humans):
-		info = '%d. %s - H: %02d S: %02d - %02d, %02d' % (i + 1, h.name, h.hunger, h.sleep, h.pos_x, h.pos_y)
+		info = '%d. %s - H: %02d S: %02d - %02d, %02d - E: %s S: %s - %s' % (i + 1, h.name, h.need_hunger, h.need_sleep, h.pos_x, h.pos_y, str(h.is_eating), str(h.is_sleeping), h.status)
 		stdscr.addstr(World.height + i + 1, 0, info)
 
 
