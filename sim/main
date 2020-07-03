@@ -8,7 +8,8 @@ import curses
 from Human import Human
 from World import World
 
-IND_HUM = 'O'
+IND_HUM = 'O'              # human indicator
+PAD_HOR = World.width + 2  # horizontal padding
 
 def main():
 	population = 7
@@ -39,8 +40,8 @@ def main():
 	stdscr.keypad(1) # this enables listening for keys
 	stdscr.nodelay(1) # removes wait for getch()
 
-	stdscr.addstr(0, 10, 'Hit \'q\' to quit.')
-	stdscr.addstr(1, 10, 'Words sound so hollow in the cold.')
+	stdscr.addstr(0, PAD_HOR, 'Hit \'q\' to quit.')
+	stdscr.addstr(1, PAD_HOR, 'Words sound so hollow in the cold.')
 	stdscr.refresh()
 
 	layer = 0;
@@ -50,9 +51,10 @@ def main():
 		if layer >= 3:
 			layer = 0
 		key = stdscr.getch()
-		stdscr.addstr(2, 10, str(layer))
+		stdscr.addstr(2, PAD_HOR, 'Layer: %d' % layer)
 		position_humans(world, humans)
 		draw_map(stdscr, world, layer)
+		print_stats_humans(stdscr, world, humans)
 		move_humans(world, humans)
 
 		stdscr.refresh()
@@ -81,6 +83,13 @@ def move_humans(world, humans):
 		while IND_HUM in world[h.pos_y][h.pos_x]:
 			world[h.pos_y][h.pos_x].remove(IND_HUM)
 		h.move_around()
+
+def print_stats_humans(stdscr, world, humans):
+	stdscr.addstr(World.height, 0, World.width * '-')
+	for i, h in enumerate(humans):
+		info = '%d. %s - H: %02d S: %02d - %02d, %02d' % (i + 1, h.name, h.hunger, h.sleep, h.pos_x, h.pos_y)
+		stdscr.addstr(World.height + i + 1, 0, info)
+
 
 if __name__ == '__main__':
 	main()

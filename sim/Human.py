@@ -5,12 +5,12 @@ from World import World
 
 class Human:
 	def __init__(self, name):
+		self.pos_x = random.randrange(0, World.width)
+		self.pos_y = random.randrange(0, World.height)
 		self.name = name
-		self.age = 22
-		self.hunger = 77
-		self.sleep = 88
-		self.pos_x = 2
-		self.pos_y = 2
+		self.age = random.randrange(20, 41)
+		self.hunger = random.randrange(50, 101)
+		self.sleep = random.randrange(50, 101)
 
 	def set_position(self, x, y):
 		if x < 0:

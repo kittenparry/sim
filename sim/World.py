@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
 
 class World:
-	width = 4
-	height = 6
+	width = 10
+	height = 10
