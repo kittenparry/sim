@@ -15,7 +15,7 @@ class Human:
 		self.name = name
 		self.age = random.randrange(20, 41)
 
-		self.need_hunger = random.randrange(10, 20)
+		self.need_hunger = random.randrange(40, 101)
 		self.need_sleep = random.randrange(50, 101)
 		
 		self.is_eating = False

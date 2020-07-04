@@ -8,7 +8,7 @@ class Food:
 		self.pos_x = random.randrange(0, World.width)
 		self.pos_y = random.randrange(0, World.height)
 
-food_supply = 1
+food_supply = 8
 food_tiles = []
 for i in range(food_supply):
 	food_tiles.append(Food())

@@ -17,7 +17,7 @@ IND_SHEL = '@' # shelter indicator
 PAD_HOR = World.width + 2  # horizontal padding
 
 def main():
-	population = 10
+	population = 25
 	humans = []
 	for i in range(population):
 		humans.append(Human('Adam'))
