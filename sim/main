@@ -17,7 +17,7 @@ IND_SHEL = '@' # shelter indicator
 PAD_HOR = World.width + 2  # horizontal padding
 
 def main():
-	population = 1
+	population = 10000
 	humans = []
 	for i in range(population):
 		humans.append(Human('Adam'))
@@ -41,10 +41,12 @@ def main():
 
 	stdscr.addstr(0, PAD_HOR, 'Hit \'q\' to quit.')
 	stdscr.addstr(1, PAD_HOR, 'Words sound so hollow in the cold.')
+	stdscr.addstr(2, PAD_HOR, 'Population: %d' % population)
 	stdscr.refresh()
 
 	position_food(world)
 	position_shelter(world)
+
 	layer = 0;
 	key = ''
 	while key != ord('q'):
@@ -52,7 +54,7 @@ def main():
 		if layer >= 3:
 			layer = 0
 		key = stdscr.getch()
-		stdscr.addstr(2, PAD_HOR, 'Layer: %d' % layer)
+		stdscr.addstr(3, PAD_HOR, 'Layer: %d' % layer)
 		position_humans(world, humans)
 		draw_map(stdscr, world, layer)
 		print_stats_humans(stdscr, world, humans)
@@ -105,10 +107,18 @@ def position_shelter(world):
 
 # UI
 def print_stats_humans(stdscr, world, humans):
-	stdscr.addstr(World.height, 0, World.width * '-')
+	stdscr.addstr(World.height, 0, World.width * 2 * '-' + '-----')
+	err = 0
 	for i, h in enumerate(humans):
-		info = '%d. %s - H: %02d S: %02d - %02d, %02d - E: %s S: %s - %s' % (i + 1, h.name, h.need_hunger, h.need_sleep, h.pos_x, h.pos_y, str(h.is_eating), str(h.is_sleeping), h.status)
-		stdscr.addstr(World.height + i + 1, 0, info)
+		info = ' %d. %s - H: %02d S: %02d - %02d, %02d - %s' % (i + 1, h.name, h.need_hunger, h.need_sleep, h.pos_x, h.pos_y, h.status)
+		try:
+			stdscr.addstr(World.height + i + 1, 0, info)
+		except curses.error:
+			if err == 0:
+				err = World.height + i
+	# TODO: maybe scroll down and up the list with arrow keys
+	if err > 0:
+		stdscr.addstr(err, 0, World.width * '-' + ' ... ' + World.width * '-')
 
 
 if __name__ == '__main__':

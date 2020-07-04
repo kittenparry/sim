@@ -22,7 +22,7 @@ class Human:
 		self.is_sleeping = False
 		self.target = None
 
-		self.status = 'Wandering.         '
+		self.set_status('Wandering.')
 
 	def set_position(self, x, y):
 		if x < 0:
@@ -43,7 +43,6 @@ class Human:
 			pass
 		elif self.target:
 			if(self.pos_x != self.target.pos_x or self.pos_y != self.target.pos_y):
-				# self.status = 'Moving to target.'
 				if self.pos_x == self.target.pos_x or self.pos_y == self.target.pos_y:
 					direction = 2
 				else:
@@ -92,35 +91,35 @@ class Human:
 	def check_needs(self):
 		if self.is_sleeping:
 			self.is_eating = False
-			self.status = 'Sleeping.          '
+			self.set_status('Sleeping.')
 			self.sleep()
 		elif self.need_sleep <= 10 and not self.is_sleeping:
 			self.is_eating = False
-			status = 'Passed out!        '
+			self.set_status('Passed out!')
 			self.is_sleeping = True
 			self.sleep()
 		elif self.need_hunger <= 50 and not self.is_eating:
 			self.is_sleeping = False
-			self.status = 'Looking for food.  '
+			self.set_status('Looking for food.')
 			self.get_closest_object('food')
 		elif self.is_eating:
 			self.is_sleeping = False
-			self.status = 'Eating.            '
+			self.set_status('Eating.')
 			self.eat()
 		elif self.need_sleep <= 30 and not self.is_sleeping:
-			self.status = 'Looking for shelter.  '
+			self.set_status('Looking for shelter.')
 			self.get_closest_object('shelter')
 		else:
-			self.status = 'Wandering.         '
+			self.set_status('Wandering.')
 
 	def eat(self):
 		self.is_eating = True
-		self.status = 'Eating.            '
+		self.set_status('Eating.')
 		if self.need_hunger < 100:
 			self.need_hunger = self.need_hunger + 20 if self.need_hunger + 20 <= 100 else 100
 		else:
 			self.is_eating = False
-			self.status = 'Wandering.         '
+			self.set_status('Wandering.')
 
 	def sleep(self):
 		self.is_sleeping = True
@@ -128,7 +127,7 @@ class Human:
 			self.need_sleep = self.need_sleep + 8 if self.need_sleep + 8 <= 100 else 100
 		else:
 			self.is_sleeping = False
-			self.status = 'Wandering.         '
+			self.set_status('Wandering.')
 	
 	def get_closest_object(self, reason):
 		# formula: v/ (x2 - x1)^2 + (y2 - y1)^2
@@ -148,3 +147,9 @@ class Human:
 
 		self.target = best_target
 		self.target_reason = reason
+	
+	def set_status(self, status):
+		'''Set status with trailing white space to reach a certain length'''
+		if len(status) < 20:
+			status = status + ' ' * (20 - len(status))
+		self.status = status
