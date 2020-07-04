@@ -15,14 +15,14 @@ class Human:
 		self.name = name
 		self.age = random.randrange(20, 41)
 
-		self.need_hunger = random.randrange(50, 101)
+		self.need_hunger = random.randrange(10, 20)
 		self.need_sleep = random.randrange(50, 101)
 		
 		self.is_eating = False
 		self.is_sleeping = False
 		self.target = None
-
 		self.set_status('Wandering.')
+		self.is_dead = False
 
 	def set_position(self, x, y):
 		if x < 0:
@@ -39,7 +39,7 @@ class Human:
 			self.pos_y = y
 
 	def move_around(self):
-		if self.is_eating or self.is_sleeping:
+		if self.is_dead or self.is_eating or self.is_sleeping:
 			pass
 		elif self.target:
 			if(self.pos_x != self.target.pos_x or self.pos_y != self.target.pos_y):
@@ -89,7 +89,9 @@ class Human:
 			self.need_sleep -= random.randrange(1, 4)
 
 	def check_needs(self):
-		if self.is_sleeping:
+		if self.need_sleep < -15 or self.need_hunger < -25:
+			self.die()
+		elif self.is_sleeping:
 			self.is_eating = False
 			self.set_status('Sleeping.')
 			self.sleep()
@@ -147,7 +149,11 @@ class Human:
 
 		self.target = best_target
 		self.target_reason = reason
-	
+
+	def die(self):
+		self.is_dead = True
+		self.set_status('Died!!!')
+
 	def set_status(self, status):
 		'''Set status with trailing white space to reach a certain length'''
 		if len(status) < 20:

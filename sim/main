@@ -17,7 +17,7 @@ IND_SHEL = '@' # shelter indicator
 PAD_HOR = World.width + 2  # horizontal padding
 
 def main():
-	population = 10000
+	population = 10
 	humans = []
 	for i in range(population):
 		humans.append(Human('Adam'))
@@ -41,7 +41,6 @@ def main():
 
 	stdscr.addstr(0, PAD_HOR, 'Hit \'q\' to quit.')
 	stdscr.addstr(1, PAD_HOR, 'Words sound so hollow in the cold.')
-	stdscr.addstr(2, PAD_HOR, 'Population: %d' % population)
 	stdscr.refresh()
 
 	position_food(world)
@@ -54,7 +53,11 @@ def main():
 		if layer >= 3:
 			layer = 0
 		key = stdscr.getch()
-		stdscr.addstr(3, PAD_HOR, 'Layer: %d' % layer)
+		stdscr.addstr(2, PAD_HOR, 'Layer: %d' % layer)
+		check_if_dead(humans)
+		stdscr.addstr(3, PAD_HOR, 'Population: %d   ' % len(humans))
+		# FIXME: temporary grave display
+		stdscr.addstr(4, PAD_HOR, 'Grave: %s' % ((population - len(humans)) * 'X'))
 		position_humans(world, humans)
 		draw_map(stdscr, world, layer)
 		print_stats_humans(stdscr, world, humans)
@@ -71,12 +74,14 @@ def draw_map(stdscr, world, layer):
 	for y in range(len(world)):
 		for i, x in enumerate(world[y]):
 			# TODO: maybe change the order of display here
+			# TODO: probably replace empty tiles with shelter and food
+			# and append human indicators above them so it flickers rather than going under
 			if IND_SHEL in x and ' ' in x:
 				obj = IND_SHEL
-			elif IND_HUM in x:
-				obj = IND_HUM
 			elif IND_FOOD in x and ' ' in x:
 				obj = IND_FOOD
+			elif IND_HUM in x:
+				obj = IND_HUM
 			else:
 				obj = x[layer] if layer < len(x) else x[-1]
 			stdscr.addstr(y, i, str(obj), curses.color_pair(1))
@@ -94,6 +99,13 @@ def move_humans(world, humans):
 		h.decrease_needs()
 		h.check_needs()
 		h.move_around()
+
+def check_if_dead(humans):
+	for h in humans:
+		if h.is_dead:
+			humans.remove(h)
+			# TODO: grave mark at some point
+			# world[h.pos_y][h.pos_x].append('x')
 
 # FOOD
 def position_food(world):
