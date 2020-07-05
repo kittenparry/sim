@@ -10,7 +10,7 @@ from World import World
 from Food import food_tiles
 from Shelter import shelter_tiles
 
-IND_HUM = 'O'  # human indicator
+IND_HUM = '☺'  # human indicator
 IND_FOOD = '+' # food indicator
 IND_SHEL = '@' # shelter indicator
 
@@ -73,14 +73,16 @@ def main():
 def draw_map(stdscr, world, layer):
 	for y in range(len(world)):
 		for i, x in enumerate(world[y]):
-			# TODO: maybe change the order of display here
-			# TODO: probably replace empty tiles with shelter and food
-			# and append human indicators above them so it flickers rather than going under
+			# replace empty tiles in shelter/food tiles so it flickers with humans on them
+			# currently this assumes food and shelter are eternal
 			if IND_SHEL in x and ' ' in x:
-				obj = IND_SHEL
-			elif IND_FOOD in x and ' ' in x:
-				obj = IND_FOOD
-			elif IND_HUM in x:
+				x[0] = IND_SHEL
+				del x[1]
+			if IND_FOOD in x and ' ' in x:
+				x[0] = IND_FOOD
+				del x[1]
+			# so it only flickers on tiles with shelter/food rather than empty tiles
+			if IND_HUM in x and ' ' in x:
 				obj = IND_HUM
 			else:
 				obj = x[layer] if layer < len(x) else x[-1]
