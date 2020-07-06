@@ -11,7 +11,7 @@ from World import World
 from Food import food_tiles
 from Shelter import shelter_tiles
 
-IND_HUM = '☺'  # human indicator
+IND_HUM = '☻'  # human indicator
 IND_FOOD = '+' # food indicator
 IND_SHEL = '@' # shelter indicator
 
