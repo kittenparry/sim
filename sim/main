@@ -12,8 +12,8 @@ from Food import food_tiles
 from Shelter import shelter_tiles
 
 IND_HUM = '☻'  # human indicator
-IND_FOOD = '+' # food indicator
-IND_SHEL = '@' # shelter indicator
+IND_FOOD = '♣' # food indicator
+IND_SHEL = '▒' # shelter indicator
 
 PAD_HOR = World.width + 2  # horizontal padding
 
@@ -21,7 +21,7 @@ def main():
 	population = 25
 	humans = []
 	for i in range(population):
-		humans.append(Human('Adam'))
+		humans.append(Human())
 
 	world = []
 	for x in range(World.height):
@@ -128,7 +128,7 @@ def print_stats_humans(stdscr, world, humans):
 	stdscr.addstr(World.height, 0, World.width * 2 * '-' + '-----')
 	err = 0
 	for i, h in enumerate(humans):
-		info = ' %d. %s - H: %02d S: %02d - %02d, %02d - %s' % (i + 1, h.name, h.need_hunger, h.need_sleep, h.pos_x, h.pos_y, h.status)
+		info = ' %d. %s %s %s. - H: %02d S: %02d - %02d, %02d - %s' % (i + 1, h.gender_glyph, h.name, h.surname, h.need_hunger, h.need_sleep, h.pos_x, h.pos_y, h.status)
 		try:
 			stdscr.addstr(World.height + i + 1, 0, info)
 		except curses.error:

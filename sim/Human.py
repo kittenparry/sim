@@ -2,18 +2,24 @@
 
 import random
 import math
+import os
+import string
 
 from World import World
 from Food import food_tiles
 from Shelter import shelter_tiles
 
 class Human:
-	def __init__(self, name):
+	def __init__(self):
 		self.pos_x = random.randrange(0, World.width)
 		self.pos_y = random.randrange(0, World.height)
 
-		self.name = name
+		self.name = 'error'
+		self.surname = list(string.ascii_uppercase)[random.randrange(0, len(list(string.ascii_uppercase)))]
 		self.age = random.randrange(20, 41)
+		self.gender = random.choice(['female', 'male'])
+		self.gender_glyph = '♀' if self.gender == 'female' else '♂'
+		self.set_name()
 
 		self.need_hunger = random.randrange(40, 101)
 		self.need_sleep = random.randrange(50, 101)
@@ -159,3 +165,7 @@ class Human:
 		if len(status) < 20:
 			status = status + ' ' * (20 - len(status))
 		self.status = status
+	
+	def set_name(self):
+		name_list = list(filter(None, open(os.path.join('names', '%s_names.txt' % self.gender)).read().split('\n')))
+		self.name = name_list[random.randrange(0, len(name_list))]
