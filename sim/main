@@ -4,6 +4,7 @@
 
 import sys
 import curses
+import datetime
 
 from Human import Human
 from World import World
@@ -46,18 +47,20 @@ def main():
 	position_food(world)
 	position_shelter(world)
 
-	layer = 0;
+	secs = 0
+	layer = 0
 	key = ''
 	while key != ord('q'):
 		# to draw different layers
 		if layer >= 3:
 			layer = 0
 		key = stdscr.getch()
-		stdscr.addstr(2, PAD_HOR, 'Layer: %d' % layer)
+		stdscr.addstr(2, PAD_HOR, 'Time: %s' % datetime.timedelta(seconds=secs))
+		stdscr.addstr(3, PAD_HOR, 'Layer: %d' % layer)
 		check_if_dead(humans)
-		stdscr.addstr(3, PAD_HOR, 'Population: %d   ' % len(humans))
+		stdscr.addstr(4, PAD_HOR, 'Population: %d   ' % len(humans))
 		# FIXME: temporary grave display
-		stdscr.addstr(4, PAD_HOR, 'Grave: %s' % ((population - len(humans)) * 'X'))
+		stdscr.addstr(5, PAD_HOR, 'Grave: %s' % ((population - len(humans)) * 'X'))
 		position_humans(world, humans)
 		draw_map(stdscr, world, layer)
 		print_stats_humans(stdscr, world, humans)
@@ -66,6 +69,7 @@ def main():
 		stdscr.refresh()
 		curses.napms(1000) # delays input rather than letting them skip cycle, including q
 		layer += 1
+		secs += 1
 
 	curses.endwin()
 
