@@ -179,7 +179,7 @@ def print_stats_humans(stdscr, world, humans):
 	for i, h in enumerate(humans):
 		try:
 			h = humans[i + scroll]
-			info = '%d. %s %s %s. - H: %02d S: %02d - %02d, %02d - %s' % (i + 1 + scroll, h.gender_glyph, h.name, h.surname, h.need_hunger, h.need_sleep, h.pos_x, h.pos_y, h.status)
+			info = '%d. H: %s S: %s  %s %s %s. - %02d, %02d - %s' % (i + 1 + scroll, draw_bar(h.need_hunger), draw_bar(h.need_sleep), h.gender_glyph, h.name, h.surname, h.pos_x, h.pos_y, h.status)
 		except IndexError:
 			pass
 		try:
@@ -203,7 +203,7 @@ def draw_human_info(stdscr, humans, key):
 	stdscr.addstr(World.height + 2, 2, '%d.' % (key + scroll))
 	stdscr.addstr(World.height + 3, 2, 'name: %s %s.' % (h.name, h.surname))
 	stdscr.addstr(World.height + 4, 2, 'age: %d gender: %s %s ' % (h.age, h.gender, h.gender_glyph))
-	stdscr.addstr(World.height + 5, 2, 'hunger: %03d sleep: %03d' % (h.need_hunger, h.need_sleep))
+	stdscr.addstr(World.height + 5, 2, 'H: %s S: %s' % (draw_bar(h.need_hunger, True), draw_bar(h.need_sleep, True)))
 	stdscr.addstr(World.height + 6, 2, 'position: %02d, %02d' % (h.pos_x, h.pos_y))
 	stdscr.addstr(World.height + 7, 2, 'status: %s' % h.status)
 
@@ -245,6 +245,36 @@ def draw_box(stdscr, width, height, top_text = '', bot_text = ''):
 
 	bot_line = '╚═%s═' % bot_text + (width - len(bot_text) - 2  if width - len(bot_text) - 2 >= 0 else 0) * '═' + '╝'
 	stdscr.addstr(World.height + last_i, 0, bot_line)
+
+def draw_bar(val, display_val = False, ind = '', top = 100):
+	# █▓▒░
+	# FIXME: not using indicators below right now
+	mid = ''
+	if ind == 'food':
+		mid = 'Θ'
+	elif ind == 'sleep':
+		mid = 'Σ'
+
+	# display value on bar
+	if display_val:
+		val_len = len(str(val))
+		second_cut = 2 + val_len
+		mid = str(val)
+	else:
+		second_cut = 3
+
+	if val > 0:
+		length = int((val / top) * 5) # this times 5 might not be nice
+		difference = 5 - length
+		bar = '%s%s' % (('▓' * length), ('░' * difference))
+		if mid:
+			bar = bar[:2] + mid + bar[second_cut:]
+	else:
+		length = int((top - abs(val)) / top * 5)
+		difference = 5 - length
+		bar = '%s%s' % (('▒' * length), ('█' * difference))
+		bar = bar[:2] + '‼' + bar[3:]
+	return bar
 
 
 if __name__ == '__main__':
