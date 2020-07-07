@@ -24,7 +24,7 @@ scrollable = False
 scroll_limit = -1
 
 def main():
-	population = 50
+	population = 25
 	humans = []
 	for i in range(population):
 		humans.append(Human())
@@ -98,10 +98,14 @@ def main():
 				scroll = scroll - 5 if scroll - 5 > 0 else 0
 			elif key == curses.KEY_END:
 				scroll = scroll_limit
+		else:
+			scrollable = False
+			scroll = 0
+			scroll_limit = -1
 
 		if key > 48 and key < 58: # 1-9 for now?
 			char_key = key
-		elif key == ord('c'):
+		elif key == ord('b'):
 			char_key = 0
 
 		if char_key > 48 and char_key < 58:
@@ -122,6 +126,7 @@ def main():
 	curses.endwin()
 
 
+# MAP
 def draw_map(stdscr, world, layer):
 	for y in range(len(world)):
 		for i, x in enumerate(world[y]):
@@ -199,7 +204,7 @@ def draw_human_info(stdscr, humans, key):
 	key = key - 48
 	h = humans[key - 1 + scroll]
 	clear_info_screen(stdscr)
-	draw_box(stdscr, World.width, 9, '(c)ancel')
+	draw_box(stdscr, World.width, 9, '(b)ack')
 	stdscr.addstr(World.height + 2, 2, '%d.' % (key + scroll))
 	stdscr.addstr(World.height + 3, 2, 'name: %s %s.' % (h.name, h.surname))
 	stdscr.addstr(World.height + 4, 2, 'age: %d gender: %s %s ' % (h.age, h.gender, h.gender_glyph))
