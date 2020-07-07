@@ -8,7 +8,7 @@ A human simulation project. An ant colony of sorts.
 * Humans dying, mostly from hunger since they pass out when too sleepy
 	* Check [death.log](sim/logs/death.log) out!
 
-![](https://raw.githubusercontent.com/kittenparry/sim/master/screenshots/screenshot-latest.png)
+![](https://raw.githubusercontent.com/kittenparry/sim/master/extras/screenshots/screenshot-latest.png)
 
 #### RIP
 Previous attempts of the project:
