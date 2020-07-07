@@ -11,9 +11,9 @@ from World import World
 from Food import food_tiles
 from Shelter import shelter_tiles
 
-IND_HUM = '☻'  # human indicator
+IND_HUM = '☺'  # human indicator
 IND_FOOD = '♣' # food indicator
-IND_SHEL = '▒' # shelter indicator
+IND_SHEL = '▓' # shelter indicator
 
 PAD_HOR = World.width + 2  # horizontal padding
 
@@ -47,6 +47,7 @@ def main():
 	position_food(world)
 	position_shelter(world)
 
+	char_key = 0
 	secs = 0
 	layer = 0
 	key = ''
@@ -61,9 +62,23 @@ def main():
 		stdscr.addstr(4, PAD_HOR, 'Population: %d   ' % len(humans))
 		# FIXME: temporary grave display
 		stdscr.addstr(5, PAD_HOR, 'Grave: %s' % ((population - len(humans)) * 'X'))
+		stdscr.addstr(6, PAD_HOR, 'key: %s' % key)
 		position_humans(world, humans)
 		draw_map(stdscr, world, layer)
-		print_stats_humans(stdscr, world, humans)
+
+		if key > 48 and key < 58: # 1-9 for now?
+			char_key = key
+		elif key == ord('c'):
+			char_key = 0
+
+		if char_key > 48 and char_key < 58:
+			try:
+				draw_human_info(stdscr, humans, char_key)
+			except IndexError:
+				char_key = 0
+		else:
+			print_stats_humans(stdscr, world, humans)
+
 		move_humans(world, humans)
 
 		stdscr.refresh()
@@ -125,19 +140,54 @@ def position_shelter(world):
 
 # UI
 def print_stats_humans(stdscr, world, humans):
-	stdscr.addstr(World.height, 0, World.width * 2 * '-' + '-----')
+	clear_info_screen(stdscr)
 	err = 0
 	for i, h in enumerate(humans):
-		info = ' %d. %s %s %s. - H: %02d S: %02d - %02d, %02d - %s' % (i + 1, h.gender_glyph, h.name, h.surname, h.need_hunger, h.need_sleep, h.pos_x, h.pos_y, h.status)
+		info = '%d. %s %s %s. - H: %02d S: %02d - %02d, %02d - %s' % (i + 1, h.gender_glyph, h.name, h.surname, h.need_hunger, h.need_sleep, h.pos_x, h.pos_y, h.status)
 		try:
-			stdscr.addstr(World.height + i + 1, 0, info)
+			stdscr.addstr(World.height + i + 1, 2, info)
 		except curses.error:
 			if err == 0:
 				err = World.height + i
+		
+		draw_box(stdscr, World.width * 2, bot_text= ' ... ')
 	# TODO: maybe scroll down and up the list with arrow keys
-	if err > 0:
-		stdscr.addstr(err, 0, World.width * '-' + ' ... ' + World.width * '-')
+	# if err > 0:
+	# 	stdscr.addstr(err, 1, World.width * '═' + ' ... ' + World.width * '═' + '╝')
 
+def draw_human_info(stdscr, humans, key):
+	key = key - 48
+	h = humans[key - 1]
+	clear_info_screen(stdscr)
+	draw_box(stdscr, World.width, '(c)ancel')
+	stdscr.addstr(World.height + 2, 1, ' name: %s %s.' % (h.name, h.surname))
+	stdscr.addstr(World.height + 3, 1, ' age: %d gender: %s %s ' % (h.age, h.gender, h.gender_glyph))
+	stdscr.addstr(World.height + 4, 1, ' hunger: %03d sleep: %03d' % (h.need_hunger, h.need_sleep))
+	stdscr.addstr(World.height + 5, 1, ' position: %d, %d' % (h.pos_x, h.pos_y))
+	stdscr.addstr(World.height + 6, 1, ' status: %s' % h.status)
+
+
+def clear_info_screen(stdscr):
+	for y in range(100):
+		for x in range(100):
+			try:
+				stdscr.addstr(World.height + y, x, ' ')
+			except curses.error:
+				pass
+
+def draw_box(stdscr, width, top_text = '', bot_text = ''):
+	top_line = '╔═%s═' % top_text + (width - len(top_text) - 2  if width - len(top_text) - 2 >= 0 else 0) * '═' + '╗'
+	stdscr.addstr(World.height, 0, top_line)
+	last_i = 0
+	try:
+		for i in range(10):
+			last_i = i
+			stdscr.addstr(World.height + i + 1, 0, '║')
+			stdscr.addstr(World.height + i + 1, len(top_line) - 1, '║')
+	except curses.error:
+		pass
+	bot_line = '╚═%s═' % bot_text + (width - len(bot_text) - 2  if width - len(bot_text) - 2 >= 0 else 0) * '═' + '╝'
+	stdscr.addstr(World.height + last_i, 0, bot_line)
 
 if __name__ == '__main__':
 	main()

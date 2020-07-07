@@ -161,11 +161,10 @@ class Human:
 		self.set_status('Died!!!')
 
 	def set_status(self, status):
-		'''Set status with trailing white space to reach a certain length'''
-		if len(status) < 20:
-			status = status + ' ' * (20 - len(status))
+		'''Set status.'''
+		# TODO: maybe limit width here to have a good looking UI^tm
 		self.status = status
-	
+
 	def set_name(self):
 		name_list = list(filter(None, open(os.path.join('names', '%s_names.txt' % self.gender)).read().split('\n')))
 		self.name = name_list[random.randrange(0, len(name_list))]
