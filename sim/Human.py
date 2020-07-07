@@ -160,7 +160,7 @@ class Human:
 	def die(self):
 		self.is_dead = True
 		log_path = os.path.join('logs', 'death.log')
-		log = '%s:: %s %s. %s - %02d %02d - %s/%s - %02d, %02d - %s\n' % (time.strftime('%y-%m-%d %H:%M:%S'), self.name, self.surname, self.gender_glyph, self.need_hunger, self.need_sleep, str(self.is_eating)[0], str(self.is_sleeping)[0], self.pos_x, self.pos_y, self.status)
+		log = '%s:: %s %s. %s %d : %02d %02d - %s/%s - %02d, %02d - %s\n' % (time.strftime('%y-%m-%d %H:%M:%S'), self.name, self.surname, self.gender_glyph, self.age, self.need_hunger, self.need_sleep, str(self.is_eating)[0], str(self.is_sleeping)[0], self.pos_x, self.pos_y, self.status)
 		self.set_status('Died!!!')
 
 		# TODO: should be in try/catch for sure
@@ -172,7 +172,7 @@ class Human:
 				'║   TOTAL HUMAN DEATH COUNT IN THIS SIM   ║\n' \
 				'║                   0                     ║\n' \
 				'╚═════════════════════════════════════════╝\n\n' \
-				'Date:: Name S. G - Hunger and Sleep needs - isEating/Sleeping - x, y - Status\n' \
+				'Date:: Name S. Sex Age : Hunger and Sleep needs - isEating/Sleeping - x, y - Status\n' \
 				'═════════════════════════════════════════════════════════════════════════════\n'
 			with open(log_path, 'w', encoding='utf8') as l:
 				l.write(first)

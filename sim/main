@@ -18,12 +18,13 @@ IND_SHEL = '▓' # shelter indicator
 PAD_HOR = World.width + 2  # horizontal padding
 
 # global variables to avoid sending 5 million arguments down
+# TODO: maybe also use it for humans, world, stdscr
 scroll = 0
 scrollable = False
 scroll_limit = -1
 
 def main():
-	population = 25
+	population = 50
 	humans = []
 	for i in range(population):
 		humans.append(Human())
@@ -243,6 +244,7 @@ def draw_box(stdscr, width, height, top_text = '', bot_text = ''):
 
 	bot_line = '╚═%s═' % bot_text + (width - len(bot_text) - 2  if width - len(bot_text) - 2 >= 0 else 0) * '═' + '╝'
 	stdscr.addstr(World.height + last_i, 0, bot_line)
+
 
 if __name__ == '__main__':
 	main()
