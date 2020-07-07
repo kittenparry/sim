@@ -181,7 +181,7 @@ def print_stats_humans(stdscr, world, humans):
 	global scroll
 	clear_info_screen(stdscr)
 	err = 0
-	for i, h in enumerate(humans):
+	for i in range(len(humans)):
 		try:
 			h = humans[i + scroll]
 			info = '%d. H: %s S: %s  %s %s %s. - %02d, %02d - %s' % (i + 1 + scroll, draw_bar(h.need_hunger), draw_bar(h.need_sleep), h.gender_glyph, h.name, h.surname, h.pos_x, h.pos_y, h.status)
