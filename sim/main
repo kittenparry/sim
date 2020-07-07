@@ -62,7 +62,7 @@ def main():
 		stdscr.addstr(4, PAD_HOR, 'Population: %d   ' % len(humans))
 		# FIXME: temporary grave display
 		stdscr.addstr(5, PAD_HOR, 'Grave: %s' % ((population - len(humans)) * 'X'))
-		stdscr.addstr(6, PAD_HOR, 'key: %s' % key)
+		stdscr.addstr(6, PAD_HOR, 'key: %s  ' % key)
 		position_humans(world, humans)
 		draw_map(stdscr, world, layer)
 
@@ -154,14 +154,14 @@ def print_stats_humans(stdscr, world, humans):
 			bot = ' ... '
 		else:
 			bot = ''
-		draw_box(stdscr, World.width * 2, bot_text = bot)
+		draw_box(stdscr, World.width * 2, len(humans) + 1, bot_text = bot)
 	# TODO: maybe scroll down and up the list with arrow keys
 
 def draw_human_info(stdscr, humans, key):
 	key = key - 48
 	h = humans[key - 1]
 	clear_info_screen(stdscr)
-	draw_box(stdscr, World.width, '(c)ancel')
+	draw_box(stdscr, World.width, 8, '(c)ancel')
 	stdscr.addstr(World.height + 2, 1, ' name: %s %s.' % (h.name, h.surname))
 	stdscr.addstr(World.height + 3, 1, ' age: %d gender: %s %s ' % (h.age, h.gender, h.gender_glyph))
 	stdscr.addstr(World.height + 4, 1, ' hunger: %03d sleep: %03d' % (h.need_hunger, h.need_sleep))
@@ -177,17 +177,20 @@ def clear_info_screen(stdscr):
 			except curses.error:
 				pass
 
-def draw_box(stdscr, width, top_text = '', bot_text = ''):
+def draw_box(stdscr, width, height, top_text = '', bot_text = ''):
 	top_line = '╔═%s═' % top_text + (width - len(top_text) - 2  if width - len(top_text) - 2 >= 0 else 0) * '═' + '╗'
 	stdscr.addstr(World.height, 0, top_line)
-	last_i = 0
-	try:
-		for i in range(100):
-			last_i = i
+	last_i = -1
+	for i in range(height):
+		try:
 			stdscr.addstr(World.height + i + 1, 0, '║')
 			stdscr.addstr(World.height + i + 1, len(top_line) - 1, '║')
-	except curses.error:
-		pass
+		except curses.error:
+			if last_i == -1:
+				last_i = i
+	# if height is less than last drawing height, last_i = height
+	# or if last_i is -1, it should be equal to height since there were no errors
+	last_i = height if height <= last_i or last_i == -1 else last_i
 	bot_line = '╚═%s═' % bot_text + (width - len(bot_text) - 2  if width - len(bot_text) - 2 >= 0 else 0) * '═' + '╝'
 	stdscr.addstr(World.height + last_i, 0, bot_line)
 
