@@ -4,6 +4,7 @@ import random
 import math
 import os
 import string
+import time
 
 from World import World
 from Food import food_tiles
@@ -95,7 +96,7 @@ class Human:
 			self.need_sleep -= random.randrange(1, 4)
 
 	def check_needs(self):
-		if self.need_sleep < -15 or self.need_hunger < -25:
+		if (self.need_sleep < -15 or self.need_hunger < -25) and not self.is_dead:
 			self.die()
 		elif self.is_sleeping:
 			self.is_eating = False
@@ -158,7 +159,33 @@ class Human:
 
 	def die(self):
 		self.is_dead = True
+		log_path = os.path.join('logs', 'death.log')
+		log = '%s:: %s %s. %s - %02d %02d - %s/%s - %02d, %02d - %s\n' % (time.strftime('%y-%m-%d %H:%M:%S'), self.name, self.surname, self.gender_glyph, self.need_hunger, self.need_sleep, str(self.is_eating)[0], str(self.is_sleeping)[0], self.pos_x, self.pos_y, self.status)
 		self.set_status('Died!!!')
+
+		# TODO: should be in try/catch for sure
+		if not os.path.isdir('logs'):
+			os.makedirs('logs')
+		if not os.path.isfile('logs/death.log'):
+			first = \
+				'╔═════════════════════════════════════════╗\n' \
+				'║   TOTAL HUMAN DEATH COUNT IN THIS SIM   ║\n' \
+				'║                   0                     ║\n' \
+				'╚═════════════════════════════════════════╝\n\n' \
+				'Date:: Name S. G - Hunger and Sleep needs - isEating/Sleeping - x, y - Status\n' \
+				'═════════════════════════════════════════════════════════════════════════════\n'
+			with open(log_path, 'w', encoding='utf8') as l:
+				l.write(first)
+
+		# read file to increase total death count before writing back
+		with open(log_path, 'r', encoding='utf8') as f:
+			data = f.readlines()
+		data[2] = increment_death_line(data[2])
+		with open(log_path, 'w', encoding='utf8') as f:
+			f.writelines(data)
+		# FIXME: could possibly append above but oh well
+		with open(log_path, 'a', encoding='utf8') as l:
+			l.write(log)
 
 	def set_status(self, status):
 		'''Set status.'''
@@ -168,3 +195,19 @@ class Human:
 	def set_name(self):
 		name_list = list(filter(None, open(os.path.join('names', '%s_names.txt' % self.gender)).read().split('\n')))
 		self.name = name_list[random.randrange(0, len(name_list))]
+
+
+# death.log
+def increment_death_line(line):
+	'''Increment death count on line 3.'''
+	width = len(line) - 3 # pillars and \n
+	line = line.replace('║', '').strip() # n
+	line = int(line) + 1
+	width = width - len(str(line)) # subtract number's width
+	if width % 2 == 0:
+		left = int(width / 2)
+		right = int(width / 2)
+	else:
+		left = int(width / 2)
+		right = left + 1
+	return '║%s%d%s║\n' % (left * ' ', line, right * ' ')

@@ -165,7 +165,7 @@ def draw_human_info(stdscr, humans, key):
 	stdscr.addstr(World.height + 2, 1, ' name: %s %s.' % (h.name, h.surname))
 	stdscr.addstr(World.height + 3, 1, ' age: %d gender: %s %s ' % (h.age, h.gender, h.gender_glyph))
 	stdscr.addstr(World.height + 4, 1, ' hunger: %03d sleep: %03d' % (h.need_hunger, h.need_sleep))
-	stdscr.addstr(World.height + 5, 1, ' position: %d, %d' % (h.pos_x, h.pos_y))
+	stdscr.addstr(World.height + 5, 1, ' position: %02d, %02d' % (h.pos_x, h.pos_y))
 	stdscr.addstr(World.height + 6, 1, ' status: %s' % h.status)
 
 
