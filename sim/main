@@ -150,10 +150,12 @@ def print_stats_humans(stdscr, world, humans):
 			if err == 0:
 				err = World.height + i
 		
-		draw_box(stdscr, World.width * 2, bot_text= ' ... ')
+		if err > 0:
+			bot = ' ... '
+		else:
+			bot = ''
+		draw_box(stdscr, World.width * 2, bot_text = bot)
 	# TODO: maybe scroll down and up the list with arrow keys
-	# if err > 0:
-	# 	stdscr.addstr(err, 1, World.width * '═' + ' ... ' + World.width * '═' + '╝')
 
 def draw_human_info(stdscr, humans, key):
 	key = key - 48
@@ -180,7 +182,7 @@ def draw_box(stdscr, width, top_text = '', bot_text = ''):
 	stdscr.addstr(World.height, 0, top_line)
 	last_i = 0
 	try:
-		for i in range(10):
+		for i in range(100):
 			last_i = i
 			stdscr.addstr(World.height + i + 1, 0, '║')
 			stdscr.addstr(World.height + i + 1, len(top_line) - 1, '║')
