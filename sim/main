@@ -17,9 +17,10 @@ IND_SHEL = '▓' # shelter indicator
 
 PAD_HOR = World.width + 2  # horizontal padding
 
-# TODO:
 # global variables to avoid sending 5 million arguments down
-g_scroll = 0 # etc.
+scroll = 0
+scrollable = False
+scroll_limit = -1
 
 def main():
 	population = 25
@@ -51,9 +52,7 @@ def main():
 	position_food(world)
 	position_shelter(world)
 
-	scroll = 0
-	scrollable = False
-	scroll_limit = -1
+	global scroll, scrollable, scroll_limit
 	char_key = 0
 	secs = 0
 	layer = 0
@@ -106,11 +105,11 @@ def main():
 
 		if char_key > 48 and char_key < 58:
 			try:
-				draw_human_info(stdscr, humans, char_key, scroll)
+				draw_human_info(stdscr, humans, char_key)
 			except IndexError:
 				char_key = 0
 		else:
-			print_stats_humans(stdscr, world, humans, scroll, scrollable, scroll_limit)
+			print_stats_humans(stdscr, world, humans)
 
 		move_humans(world, humans)
 
@@ -172,7 +171,8 @@ def position_shelter(world):
 		world[s.pos_y][s.pos_x].append(IND_SHEL)
 
 # UI
-def print_stats_humans(stdscr, world, humans, scroll, scrollable, scroll_limit):
+def print_stats_humans(stdscr, world, humans):
+	global scroll
 	clear_info_screen(stdscr)
 	err = 0
 	for i, h in enumerate(humans):
@@ -191,9 +191,10 @@ def print_stats_humans(stdscr, world, humans, scroll, scrollable, scroll_limit):
 			bot = ' ... '
 		else:
 			bot = ''
-		draw_box(stdscr, World.width * 2, len(humans) + 1, top_text = scroll, bot_text = bot, scroll = scroll, scrollable = scrollable, scroll_limit = scroll_limit)
+		draw_box(stdscr, World.width * 2, len(humans) + 1, top_text = scroll, bot_text = bot)
 
-def draw_human_info(stdscr, humans, key, scroll):
+def draw_human_info(stdscr, humans, key):
+	global scroll
 	key = key - 48
 	h = humans[key - 1 + scroll]
 	clear_info_screen(stdscr)
@@ -213,7 +214,7 @@ def clear_info_screen(stdscr):
 			except curses.error:
 				pass
 
-def draw_box(stdscr, width, height, top_text = '', bot_text = '', scroll = 0, scrollable = False, scroll_limit = -1):
+def draw_box(stdscr, width, height, top_text = '', bot_text = ''):
 	top_text = str(top_text)
 	bot_text = str(bot_text)
 	top_line = '╔═%s═' % top_text + (width - len(top_text) - 2  if width - len(top_text) - 2 >= 0 else 0) * '═' + '╗'
@@ -231,6 +232,7 @@ def draw_box(stdscr, width, height, top_text = '', bot_text = '', scroll = 0, sc
 	# or if last_i is -1, it should be equal to height since there were no errors
 	last_i = height if height <= last_i or last_i == -1 else last_i
 
+	global scroll, scrollable, scroll_limit
 	if scroll == 0 and scrollable:
 		stdscr.addstr(World.height + 4, 0, '▼')
 	elif scroll > 0 and scroll < scroll_limit:
