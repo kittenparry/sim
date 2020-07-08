@@ -22,6 +22,8 @@ PAD_HOR = World.width + 2  # horizontal padding
 scroll = 0
 scrollable = False
 scroll_limit = -1
+char_key = 0
+
 
 def main():
 	population = 25
@@ -53,8 +55,7 @@ def main():
 	position_food(world)
 	position_shelter(world)
 
-	global scroll, scrollable, scroll_limit
-	char_key = 0
+	global scroll, scrollable, scroll_limit, char_key
 	secs = 0
 	layer = 0
 	key = ''
@@ -80,7 +81,6 @@ def main():
 		stdscr.addstr(9, PAD_HOR, 'test: %d' % (win_y - World.height))
 
 		position_humans(world, humans)
-		draw_map(stdscr, world, layer)
 
 		# FIXME: this might be > rather than >=
 		if len(humans) + 2 >= bottom_y:
@@ -110,12 +110,13 @@ def main():
 
 		if char_key > 48 and char_key < 58:
 			try:
-				draw_human_info(stdscr, humans, char_key)
+				draw_human_info(stdscr, humans)
 			except IndexError:
 				char_key = 0
 		else:
 			print_stats_humans(stdscr, world, humans)
 
+		draw_map(stdscr, world, layer, humans)
 		move_humans(world, humans)
 
 		stdscr.refresh()
@@ -127,7 +128,12 @@ def main():
 
 
 # MAP
-def draw_map(stdscr, world, layer):
+def draw_map(stdscr, world, layer, humans):
+	global char_key, scroll
+	h = None
+	if char_key > 0:
+		h = humans[char_key - 48 - 1 + scroll]
+
 	for y in range(len(world)):
 		for i, x in enumerate(world[y]):
 			# replace empty tiles in shelter/food tiles so it flickers with humans on them
@@ -144,6 +150,10 @@ def draw_map(stdscr, world, layer):
 			else:
 				obj = x[layer] if layer < len(x) else x[-1]
 			stdscr.addstr(y, i, str(obj), curses.color_pair(1))
+			if h:
+				# FIXME: for future, this assumes world drawing position starts from 0, 0
+				if y == h.pos_y and i == h.pos_x:
+					stdscr.addstr(y, i, str(obj), curses.color_pair(2))
 
 # HUMANS
 def position_humans(world, humans):
@@ -199,9 +209,9 @@ def print_stats_humans(stdscr, world, humans):
 			bot = ''
 		draw_box(stdscr, World.width * 2, len(humans) + 1, top_text = scroll, bot_text = bot)
 
-def draw_human_info(stdscr, humans, key):
-	global scroll
-	key = key - 48
+def draw_human_info(stdscr, humans):
+	global scroll, char_key
+	key = char_key - 48
 	h = humans[key - 1 + scroll]
 	clear_info_screen(stdscr)
 	draw_box(stdscr, World.width, 9, '(b)ack')
