@@ -278,7 +278,7 @@ def draw_bar(val, display_val = False, ind = '', top = 100):
 	else:
 		second_cut = 3
 
-	if val > 0:
+	if val >= 0:
 		length = int((val / top) * 5) # this times 5 might not be nice
 		difference = 5 - length
 		bar = '%s%s' % (('▓' * length), ('░' * difference))
