@@ -51,6 +51,7 @@ def main():
 
 	stdscr.addstr(0, PAD_HOR, 'Hit \'q\' to quit.')
 	stdscr.addstr(1, PAD_HOR, 'Words sound so hollow in the cold.')
+	stdscr.addstr(World.height - 1, PAD_HOR, '(c)ontrols')
 	stdscr.refresh()
 
 	position_food(world)
@@ -106,6 +107,8 @@ def main():
 
 		if key > 48 and key < 58: # 1-9 for now?
 			char_key = key
+		elif key == ord('c'):
+			char_key = ord('c')
 		elif key == ord('b'):
 			char_key = 0
 
@@ -114,6 +117,8 @@ def main():
 				draw_human_info(stdscr, humans)
 			except IndexError:
 				char_key = 0
+		elif char_key == ord('c'):
+			print_controls(stdscr)
 		else:
 			print_stats_humans(stdscr, world, humans)
 
@@ -132,7 +137,7 @@ def main():
 def draw_map(stdscr, world, layer, humans):
 	global char_key, scroll
 	h = None
-	if char_key > 0:
+	if char_key > 48 and char_key < 58:
 		h = humans[char_key - 48 - 1 + scroll]
 
 	for y in range(len(world)):
@@ -232,7 +237,7 @@ def clear_info_screen(stdscr):
 			except curses.error:
 				pass
 
-def draw_box(stdscr, width, height, top_text = '', bot_text = ''):
+def draw_box(stdscr, width, height, top_text = '', bot_text = '', dont_draw_scroll = False):
 	top_text = str(top_text)
 	bot_text = str(bot_text)
 	top_line = '╔═%s═' % top_text + (width - len(top_text) - 2  if width - len(top_text) - 2 >= 0 else 0) * '═' + '╗'
@@ -250,14 +255,15 @@ def draw_box(stdscr, width, height, top_text = '', bot_text = ''):
 	# or if last_i is -1, it should be equal to height since there were no errors
 	last_i = height if height <= last_i or last_i == -1 else last_i
 
-	global scroll, scrollable, scroll_limit
-	if scroll == 0 and scrollable:
-		stdscr.addstr(World.height + 4, 0, '▼')
-	elif scroll > 0 and scroll < scroll_limit:
-		stdscr.addstr(World.height + 2, 0, '▲')
-		stdscr.addstr(World.height + 4, 0, '▼')
-	elif scroll == scroll_limit:
-		stdscr.addstr(World.height + 2, 0, '▲')
+	if not dont_draw_scroll:
+		global scroll, scrollable, scroll_limit
+		if scroll == 0 and scrollable:
+			stdscr.addstr(World.height + 4, 0, '▼')
+		elif scroll > 0 and scroll < scroll_limit:
+			stdscr.addstr(World.height + 2, 0, '▲')
+			stdscr.addstr(World.height + 4, 0, '▼')
+		elif scroll == scroll_limit:
+			stdscr.addstr(World.height + 2, 0, '▲')
 
 	bot_line = '╚═%s═' % bot_text + (width - len(bot_text) - 2  if width - len(bot_text) - 2 >= 0 else 0) * '═' + '╝'
 	stdscr.addstr(World.height + last_i, 0, bot_line)
@@ -292,6 +298,12 @@ def draw_bar(val, display_val = False, ind = '', top = 100):
 		bar = bar[:2] + '‼' + bar[3:]
 	return bar
 
+def print_controls(stdscr):
+	clear_info_screen(stdscr)
+	draw_box(stdscr, World.width + 5, 9, '(b)ack', dont_draw_scroll = True)
+	stdscr.addstr(World.height + 2, 2, 'CONTROLS')
+	stdscr.addstr(World.height + 4, 2, '▲ ▼ pUP pDOWN HOME END - scroll list')
+	stdscr.addstr(World.height + 5, 2, '1..9 - display individual human page')
 
 if __name__ == '__main__':
 	main()
